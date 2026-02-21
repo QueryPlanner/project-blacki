@@ -1,0 +1,27 @@
+<!--
+ Copyright 2025 Google LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{ data.dialogHeader }}</h2>
+  <mat-dialog-content class="editor">
+    {{ functionName }}
+    <app-json-editor [jsonString]="jsonString"></app-json-editor>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>{{ i18n.cancelButton }}</button>
+    <button mat-button cdkFocusInitial (click)="onSave()">{{ i18n.saveButton }}</button>
+  </mat-dialog-actions>
+</div>
