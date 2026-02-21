@@ -19,7 +19,8 @@ import {TextFieldModule} from '@angular/cdk/text-field';
 import {CommonModule, NgClass} from '@angular/common';
 import {AfterViewInit, Component, DestroyRef, effect, ElementRef, EventEmitter, HostListener, inject, input, Input, OnChanges, Output, signal, SimpleChanges, Type, ViewChild} from '@angular/core';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule, FormControl} from '@angular/forms';
+import {MatSelectModule} from '@angular/material/select';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -38,7 +39,7 @@ import {JsonTooltipDirective} from '../../directives/html-tooltip.directive';
 
 import type {EvalCase} from '../../core/models/Eval';
 import {FunctionCall, FunctionResponse} from '../../core/models/types';
-import {AGENT_SERVICE} from '../../core/services/interfaces/agent';
+import {AGENT_SERVICE, OpenRouterModel} from '../../core/services/interfaces/agent';
 import {FEATURE_FLAG_SERVICE} from '../../core/services/interfaces/feature-flag';
 import {SESSION_SERVICE} from '../../core/services/interfaces/session';
 import {STRING_TO_COLOR_SERVICE} from '../../core/services/interfaces/string-to-color';
@@ -63,6 +64,8 @@ const ROOT_AGENT = 'root_agent';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
+    MatSelectModule,
     MatIconModule,
     MatCardModule,
     MatProgressBarModule,
@@ -100,6 +103,11 @@ export class ChatPanelComponent implements OnChanges, AfterViewInit {
   @Input() isAudioRecording: boolean = false;
   @Input() isVideoRecording: boolean = false;
   @Input() hoveredEventMessageIndices: number[] = [];
+  @Input() availableModels: OpenRouterModel[] = [];
+  @Input() selectedModel: string | null = null;
+  @Input() isLoadingModels: boolean = false;
+
+  @Output() readonly selectedModelChange = new EventEmitter<string | null>();
 
   @Output() readonly userInputChange = new EventEmitter<string>();
   @Output() readonly userEditEvalCaseMessageChange = new EventEmitter<string>();
@@ -157,6 +165,18 @@ export class ChatPanelComponent implements OnChanges, AfterViewInit {
       toSignal(this.featureFlagService.isFeedbackServiceEnabled());
   readonly isLoadingAgentResponse =
       toSignal(this.agentService.getLoadingState());
+
+  readonly modelSearchControl = new FormControl('', {nonNullable: true});
+
+  get filteredModels(): OpenRouterModel[] {
+    const searchStr = this.modelSearchControl.value.toLowerCase().trim();
+    if (!searchStr) {
+      return this.availableModels;
+    }
+    return this.availableModels.filter((m) =>
+      m.name.toLowerCase().includes(searchStr)
+    );
+  }
 
   protected readonly onScroll = new Subject<Event>();
 
