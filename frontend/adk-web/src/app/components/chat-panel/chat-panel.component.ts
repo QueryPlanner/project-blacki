@@ -167,13 +167,15 @@ export class ChatPanelComponent implements OnChanges, AfterViewInit {
       toSignal(this.agentService.getLoadingState());
 
   readonly modelSearchControl = new FormControl('', {nonNullable: true});
+  filteredModels: OpenRouterModel[] = [];
 
-  get filteredModels(): OpenRouterModel[] {
+  private updateFilteredModels() {
     const searchStr = this.modelSearchControl.value.toLowerCase().trim();
     if (!searchStr) {
-      return this.availableModels;
+      this.filteredModels = this.availableModels;
+      return;
     }
-    return this.availableModels.filter((m) =>
+    this.filteredModels = this.availableModels.filter((m) =>
       m.name.toLowerCase().includes(searchStr)
     );
   }
@@ -197,6 +199,12 @@ export class ChatPanelComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnInit() {
+    this.modelSearchControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.updateFilteredModels();
+      });
+
     this.featureFlagService.isInfinityMessageScrollingEnabled()
         .pipe(
             first(),
@@ -246,6 +254,9 @@ export class ChatPanelComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes['availableModels']) {
+      this.updateFilteredModels();
+    }
     if (changes['messages']) {
       const currentLastMessage = this.messages[this.messages.length - 1];
       const isNewMessageAppended = currentLastMessage !== this.lastMessageRef;

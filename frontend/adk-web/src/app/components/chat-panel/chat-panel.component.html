@@ -437,14 +437,14 @@
               (openedChange)="modelSearchControl.setValue('')"
               [disabled]="isLoadingModels"
             >
-              <mat-option class="search-option" (click)="$event.stopPropagation()" [value]="null">
+              <mat-option class="search-option" disabled="true" (click)="$event.stopPropagation()">
                 <mat-form-field class="model-search-field" subscriptSizing="dynamic" (click)="$event.stopPropagation()">
                   <input
                     matInput
                     placeholder="Search models..."
                     [formControl]="modelSearchControl"
                     (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()"
+                    (keydown.Space)="$event.stopPropagation()"
                   />
                 </mat-form-field>
               </mat-option>
