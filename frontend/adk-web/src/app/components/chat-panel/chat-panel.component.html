@@ -427,7 +427,33 @@
         [placeholder]="i18n.typeMessagePlaceholder"
       ></textarea>
       <div class="chat-input-actions">
-        <div>
+        <div style="display: flex; align-items: center">
+          @if (availableModels.length > 0) {
+          <mat-form-field class="model-select-field" appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Model</mat-label>
+            <mat-select
+              [value]="selectedModel"
+              (valueChange)="selectedModelChange.emit($event)"
+              (openedChange)="modelSearchControl.setValue('')"
+              [disabled]="isLoadingModels"
+            >
+              <mat-option class="search-option" disabled="true" (click)="$event.stopPropagation()">
+                <mat-form-field class="model-search-field" subscriptSizing="dynamic" (click)="$event.stopPropagation()">
+                  <input
+                    matInput
+                    placeholder="Search models..."
+                    [formControl]="modelSearchControl"
+                    (click)="$event.stopPropagation()"
+                    (keydown.Space)="$event.stopPropagation()"
+                  />
+                </mat-form-field>
+              </mat-option>
+              @for (m of filteredModels; track m.id) {
+              <mat-option [value]="m.id">{{ m.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          }
           <button
             mat-icon-button
             (click)="fileInput.click()"

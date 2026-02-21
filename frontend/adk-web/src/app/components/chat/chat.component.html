@@ -197,24 +197,6 @@
       </div>
       @if (isSessionLoading === false) {
       <div class="toolbar-actions">
-        @if (availableModels().length > 0) {
-        <mat-form-field class="toolbar-model-select" appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Model</mat-label>
-          <mat-select
-            [value]="selectedModel()"
-            (valueChange)="selectedModel.set($event)"
-            [disabled]="isLoadingModels()"
-          >
-            @for (m of availableModels(); track m.id) {
-            <mat-option [value]="m.id">{{ m.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <mat-divider
-          [vertical]="true"
-          style="margin-left: 8px; margin-right: 8px; height: 22px"
-        ></mat-divider>
-        }
         <div class="toolbar-sse-toggle">
           <mat-slide-toggle
             class="example-margin"
@@ -304,6 +286,10 @@
       <app-chat-panel
         [appName]="appName"
         [messages]="messages()"
+        [availableModels]="availableModels()"
+        [selectedModel]="selectedModel()"
+        [isLoadingModels]="isLoadingModels()"
+        (selectedModelChange)="selectedModel.set($event)"
         [isChatMode]="isChatMode()"
         [evalCase]="evalCase"
         [isEvalEditMode]="isEvalEditMode()"
